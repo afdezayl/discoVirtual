@@ -1,0 +1,156 @@
+:root {
+    /*--primary-color: #304ffe;
+    --primary-light-color: #7a7cff;
+    --primary-dark-color:#0026ca;
+    --secondary-color: #ffd740;
+    --secondary-light-Color:#ffff74;
+    --secondary-dark-color: #c8a600;
+    --primary-text-color: #ffffff;
+    --secondary-text-color: #000000;*/
+
+    --primary-color-dark: #303F9F;
+    --primary-color: #3F51B5;
+    --primary-color-light: #C5CAE9;
+    --primary-color-text: #FFFFFF;
+    --accent-color: #FF9800;
+    --accent-color-light: rgb(255, 196, 0);
+    --primary-text-color: #212121;
+    --secondary-text-color: #757575;
+    --divider-color: #BDBDBD;
+}
+
+.icon {
+    width: 48px;
+    margin: 2px;    
+    padding: 2px;
+    border-radius: 4px;
+    background: var(--accent-color);
+}
+
+.icon:active,
+.icon:hover {
+    background: var(--accent-color-light);
+}
+
+.logout {
+    content: url("../img/logout.svg");
+    box-shadow: 1px  0 3px var(--primary-text-color), 
+            -1px 0  var(--primary-color-light),
+            0 1px 3px var(--primary-text-color),
+            0 -1px var(--primary-color-light);
+}
+
+.upload {
+    content: url('../img/upload.svg');
+    background: var(--primary-color);
+}
+
+* {
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box;
+    font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+}
+
+.error {
+    padding: 1rem;
+    color: red;
+}
+
+body {
+    /*background: var(--divider-color);*/
+    min-width: 250px;
+    max-width: 1920px;
+    margin: auto;
+}
+
+header {
+    padding: 1.5rem;
+    background: var(--primary-color);
+    border-top: 1rem solid var(--primary-color-dark);
+    color: var(--primary-color-text);
+    text-align: center;
+}
+
+form {
+    width: 40%;
+    margin: 10vh auto 1em auto;
+    /*padding: 20px 0;   */
+
+    border: 1px solid var(--secondary-dark-color);
+    border-radius: 5px;
+    background: var(--primary-color-text);
+    box-shadow: 1px 1px 5px var(--primary-text-color);
+    text-align: center;
+}
+
+form div {
+    width: 60%;
+    margin: auto;
+    padding-top: 20px;
+    font-weight: bold;
+}
+
+form div label {
+    display: flex;
+    width: 100%;
+    text-align: left;
+    color: var(--primary-color-dark);
+    align-items: center;
+}
+
+form div input {
+    display: block;
+    width: 100%;
+    margin: 10px auto;
+    padding: 0.2rem;
+
+    border: none;
+    border-bottom: 2px solid var(--primary-color);
+
+    font-size: 1.2rem;
+    transition: all ease 0.5s;
+}
+
+form div input:focus {
+    color: var(--primary-text-color);
+    border-bottom: 2px solid var(--accent-color);
+    margin: 10px auto;
+    padding: 10px 0.6rem;
+}
+
+form input[type="file"] {
+    display: none;
+}
+
+form button {
+    background: var(--accent-color);
+    color: var(--primary-text-color);
+
+    padding: 5px 10px;
+    font-size: 1.2rem;
+}
+
+form button:hover,
+form button:active {
+    background: var(--accent-color-light);
+}
+
+@media only screen and (max-width: 960px) {
+    form {
+        width: 60%;
+    }
+
+
+}
+
+@media only screen and (max-width: 600px) {
+    form {
+        width: 99%;
+        margin: auto;
+    }
+
+    form div {
+        width: 80%;
+    }
+}
