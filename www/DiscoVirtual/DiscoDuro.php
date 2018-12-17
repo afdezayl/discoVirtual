@@ -1,4 +1,4 @@
-<?php    
+<?php
     require "./../../seguridad/disco/Session.php";
 
     Session::start();
@@ -33,23 +33,28 @@
     </header>
 
     <main>
-        <div id="user_files">
-        </div>      
-       
-       <div>
-            <form action="" method="post" enctype="multipart/form-data" id="form">
-                <div id="upload_files">
-                </div>
+        <h2>Tus archivos</h2>
+        <div>
+            <span>/</span>
+            <button id="mkdir">Crear carpeta</button>            
+        </div>
 
-                <div>
-                    <label for="input_file">
+        <section id="user_files"></section>             
+       
+        <form action="" method="post" enctype="multipart/form-data" id="form">            
+            <div id="upload_files"></div>
+
+            <div>
+                <label for="input_file">
+                    <span class="btn_upload">
                         <i class="icon upload"></i>Subir archivos
-                    </label>
-                    <input type="file" name="files[]" id="input_file" multiple="multiple" />
-                </div>
-                <button type="submit">Enviar</button>
-            </form>
-       </div>
+                    </span>                        
+                </label>
+                <input type="file" name="files[]" id="input_file" multiple="multiple" />
+            </div>
+            <button type="submit">Enviar</button>
+        </form>
+      
     </main>   
 
 </body>

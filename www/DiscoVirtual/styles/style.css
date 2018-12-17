@@ -1,50 +1,56 @@
 :root {
-    /*--primary-color: #304ffe;
-    --primary-light-color: #7a7cff;
-    --primary-dark-color:#0026ca;
-    --secondary-color: #ffd740;
-    --secondary-light-Color:#ffff74;
-    --secondary-dark-color: #c8a600;
-    --primary-text-color: #ffffff;
-    --secondary-text-color: #000000;*/
-
-    --primary-color-dark: #303F9F;
-    --primary-color: #3F51B5;
-    --primary-color-light: #C5CAE9;
-    --primary-color-text: #FFFFFF;
-    --accent-color: #FF9800;
-    --accent-color-light: rgb(255, 196, 0);
-    --primary-text-color: #212121;
-    --secondary-text-color: #757575;
-    --divider-color: #BDBDBD;
+    
+    --darkPrimaryColor: #303F9F;
+    --primaryColor: #3F51B5;
+    --primaryColorLight: #C5CAE9;
+    --primaryColorText: #FFFFFF;
+    --accentColor: #FF9800;
+    --accentColorLight: #ffc400;
+    --primaryTextColor: #212121;
+    --secondaryTextColor: #757575;
+    --dividerColor: #BDBDBD;
 }
 
+/*
+    ICONOS
+*/
 .icon {
     width: 48px;
     margin: 2px;    
     padding: 2px;
-    border-radius: 4px;
-    background: var(--accent-color);
-}
-
-.icon:active,
-.icon:hover {
-    background: var(--accent-color-light);
+    border-radius: 4px; 
+    
+    cursor: pointer;
 }
 
 .logout {
+    background: var(--accentColor);
     content: url("../img/logout.svg");
-    box-shadow: 1px  0 3px var(--primary-text-color), 
-            -1px 0  var(--primary-color-light),
-            0 1px 3px var(--primary-text-color),
-            0 -1px var(--primary-color-light);
+    box-shadow: 1px  0 3px var(--primaryTextColor), 
+            -1px 0  var(--primaryColorLight),
+            0 1px 3px var(--primaryTextColor),
+            0 -1px var(--primaryColorLight);
+}
+
+.logout:active,
+.logout:hover {
+    background: var(--accentColorLight);
 }
 
 .upload {
     content: url('../img/upload.svg');
-    background: var(--primary-color);
 }
 
+.folder {
+    content: url('../img/folder.svg');
+}
+
+.file {
+    content: url('../img/file.svg');
+}
+/*
+    ESTILOS
+*/
 * {
     padding: 0;
     margin: 0;
@@ -58,18 +64,60 @@
 }
 
 body {
-    /*background: var(--divider-color);*/
+    /*background: var(--dividerColor);*/
     min-width: 250px;
     max-width: 1920px;
     margin: auto;
 }
 
 header {
+    display: flex;
+    justify-content: space-evenly;
     padding: 1.5rem;
-    background: var(--primary-color);
-    border-top: 1rem solid var(--primary-color-dark);
-    color: var(--primary-color-text);
+    background: var(--primaryColor);
+    border-top: 1rem solid var(--darkPrimaryColor);
+    color: var(--primaryColorText);
     text-align: center;
+}
+
+#user_files {
+    width: 80%;
+    margin: 1rem auto;
+
+    border-radius: 5px;
+    background: var(--primaryColorText);
+    box-shadow: 1px 1px 5px var(--primaryTextColor);
+    text-align: center;
+}
+
+#user_files table {
+    border-collapse: collapse;
+    width: 100%;    
+}
+
+#user_files table tr {
+    border: 1px solid var(--secondaryTextColor);
+}
+
+#user_files table tr:nth-child(even){
+    background: var(--dividerColor);
+}
+
+#user_files table td {
+    
+}
+#user_files table th {
+    height: 3rem;
+    background: var(--darkPrimaryColor);
+    color: var(--primaryColorText);
+}
+
+header select {
+    background: var(--primaryColor);
+}
+
+header select option:hover {
+    background: red;
 }
 
 form {
@@ -79,8 +127,8 @@ form {
 
     border: 1px solid var(--secondary-dark-color);
     border-radius: 5px;
-    background: var(--primary-color-text);
-    box-shadow: 1px 1px 5px var(--primary-text-color);
+    background: var(--primaryColorText);
+    box-shadow: 1px 1px 5px var(--primaryTextColor);
     text-align: center;
 }
 
@@ -92,11 +140,31 @@ form div {
 }
 
 form div label {
-    display: flex;
+    display: block;    
     width: 100%;
     text-align: left;
-    color: var(--primary-color-dark);
+    color: var(--darkPrimaryColor);    
+}
+
+.btn_upload{
+    display: flex;
     align-items: center;
+    justify-content: center;
+
+    background: var(--darkPrimaryColor);
+    color: var(--primaryColorText);
+    box-shadow: 1px  0  var(--primaryTextColor), 
+        -1px 0  var(--primaryColorLight),
+        0 1px  var(--primaryTextColor),
+        0 -1px var(--primaryColorLight);
+
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.btn_upload:active,
+.btn_upload:hover {
+    background: var(--primaryColor);
 }
 
 form div input {
@@ -106,15 +174,16 @@ form div input {
     padding: 0.2rem;
 
     border: none;
-    border-bottom: 2px solid var(--primary-color);
+    border-bottom: 2px solid var(--primaryColor);
 
     font-size: 1.2rem;
     transition: all ease 0.5s;
+    cursor: pointer;
 }
 
 form div input:focus {
-    color: var(--primary-text-color);
-    border-bottom: 2px solid var(--accent-color);
+    color: var(--primaryTextColor);
+    border-bottom: 2px solid var(--accentColor);
     margin: 10px auto;
     padding: 10px 0.6rem;
 }
@@ -124,24 +193,26 @@ form input[type="file"] {
 }
 
 form button {
-    background: var(--accent-color);
-    color: var(--primary-text-color);
+    background: var(--accentColor);
+    color: var(--primaryTextColor);
 
     padding: 5px 10px;
+    margin: 2em auto;
     font-size: 1.2rem;
+    border-radius: 4px;
+
+    cursor: pointer;
 }
 
 form button:hover,
 form button:active {
-    background: var(--accent-color-light);
+    background: var(--accentColorLight);
 }
 
 @media only screen and (max-width: 960px) {
     form {
         width: 60%;
     }
-
-
 }
 
 @media only screen and (max-width: 600px) {

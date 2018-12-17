@@ -15,7 +15,7 @@
         ? strip_tags(trim($_POST['pass']))
         : "";
 
-    $txt="";
+    $txt="";    
 
     $DB = new DiscoDuroDB();
     $passDB = $DB->getPassword($user);
@@ -49,10 +49,9 @@
         <h1>Disco Duro Virtual</h1>
     </header>
 
-    <main>
-        
-        
-        <form action="" method="post" id="form">
+    <main>       
+        <form action="" method="post" id="form" autocomplete="off">
+            <p class="error"><?php echo $txt; ?></p>
             <div>
                 <label for="user">Usuario</label>
                 <input type="text" name="user" id="user" placeholder="Nombre de usuario" maxlength="15" />
@@ -63,8 +62,7 @@
                 <input type="password" name="pass" id="pass" placeholder="Introduzca su contraseña" maxlength="20" />
             </div>
             
-            <button type="submit">Login</button>
-            <p class="error"><?php echo $txt; ?></p>
+            <button type="submit">Login</button>            
         </form>
     </main>   
 

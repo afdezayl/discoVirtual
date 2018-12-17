@@ -8,9 +8,22 @@
         exit;
     }
 
+    $folder = isset($_POST['folder']) && strlen($_POST['folder']) == 23
+        ? strip_tags(trim($_POST['folder']))
+        : null;
+
     $user = $_SESSION['user'];
 
     $DB = new DiscoDuroDB();
-    $files = $DB->getUserFileList($user);
 
-    echo json_encode($files);
+    if(is_null($folder)) {
+        $folder = $DB->getRootID($user);
+        $files = $DB->getFileList($user, $folder);
+    } else {
+        $files = $DB->getFileList($user, $folder);
+    }    
+
+    echo json_encode([
+        "parentID"=>$folder,
+        "files"=>$files
+        ]);
