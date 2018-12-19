@@ -4,8 +4,10 @@ class DiscoDuroDB
     private $SERVIDOR = "localhost";
     private $USUARIO = "discoduro2";
     private $PASSWORD = "discoduro2";
-    private $BBDD = "discoduro2";
+    private $BBDD = "discoduro2";    
     private $CONEXION;
+
+    private $ALMACEN = "./../../../ficheros/";
 
     public function __construct()
     {
@@ -26,7 +28,7 @@ class DiscoDuroDB
         }
 
         return $conexion;
-    }    
+    }
 
     public function getPassword($user)
     {
@@ -47,7 +49,8 @@ class DiscoDuroDB
         return $clave;
     }
 
-    public function getRootID($user) {
+    public function getRootID($user)
+    {
         $conexion = $this->CONEXION;
 
         $consultaSql = "SELECT id
@@ -66,7 +69,48 @@ class DiscoDuroDB
         return $id;
     }
 
-    public function getFileList($user, $folder) {
+    public function getRootFolder($user) {
+        return $this->ALMACEN;
+    }
+
+    public function getCuota($user) {
+        $conexion = $this->CONEXION;
+
+        $consultaSql = "SELECT cuota
+                    FROM USUARIOS
+                    WHERE usuario=?";
+        
+        $consultaPreparada = $conexion->prepare($consultaSql);
+        $consultaPreparada->bind_param('s', $user);
+
+        $consultaPreparada->execute();
+
+        $consultaPreparada->bind_result($cuota);
+        $consultaPreparada->fetch();
+
+        return $cuota;
+    }
+
+    public function getUsedSpace($user) {
+        $conexion = $this->CONEXION;
+
+        $consultaSql = "SELECT sum(tamanyo)
+                    FROM DISCO
+                    WHERE usuario=?";
+        
+        $consultaPreparada = $conexion->prepare($consultaSql);
+        $consultaPreparada->bind_param('s', $user);
+
+        $consultaPreparada->execute();
+        $consultaPreparada->bind_result($sum);
+
+        $consultaPreparada->fetch();
+
+        return $sum;
+    }
+
+    public function getFileList($user, $folder)
+    {
         $conexion = $this->CONEXION;
 
         $consultaSql = "SELECT *
@@ -82,14 +126,15 @@ class DiscoDuroDB
 
         $files = array();
         
-        while($file = $resultado->fetch_assoc()) {
+        while ($file = $resultado->fetch_assoc()) {
             array_push($files, $file);
         }
 
         return $files;
     }
 
-    public function makeDir($id, $nombre, $user, $id_depende) {
+    public function makeDir($id, $nombre, $user, $id_depende)
+    {
         $conexion = $this->CONEXION;
 
         $consultaSql = "INSERT INTO DISCO
@@ -102,5 +147,40 @@ class DiscoDuroDB
         $insertado = $consultaPreparada->execute();
 
         return $insertado;
+    }
+
+    public function insertFile($id, $nombre, $tamanyo, $tipoMime, $user, $id_depende) {
+        $conexion = $this->CONEXION;
+
+        $consultaSql = "INSERT INTO DISCO
+                    (id, nombre, tamanyo, tipoMime, tipoFichero, usuario, id_depende)
+                    VALUES(?, ?, ?, ?, 'F', ?, ?)";
+        
+        $consultaPreparada = $conexion->prepare($consultaSql);
+        $consultaPreparada->bind_param('ssssss', $id, $nombre, $tamanyo, $tipoMime, $user, $id_depende);
+
+        $insertado = $consultaPreparada->execute();
+
+        return $insertado;
+    }
+
+    public function isUserDir($user, $id)
+    {
+        $conexion = $this->CONEXION;
+
+        $consultaSql = "SELECT count(*)
+                    FROM DISCO
+                    WHERE usuario=?
+                        and id=?";
+
+        $consultaPreparada = $conexion->prepare($consultaSql);
+        $consultaPreparada->bind_param('ss', $user, $id);
+
+        $consultaPreparada->execute();
+
+        $consultaPreparada->bind_result($count);
+        $consultaPreparada->fetch();
+
+        return $count == 1;
     }
 }

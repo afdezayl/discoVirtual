@@ -1,5 +1,4 @@
-:root {
-    
+:root {    
     --darkPrimaryColor: #303F9F;
     --primaryColor: #3F51B5;
     --primaryColorLight: #C5CAE9;
@@ -11,34 +10,52 @@
     --dividerColor: #BDBDBD;
 }
 
-/*
+/*-------------------------------
     ICONOS
-*/
+--------------------------------*/
 .icon {
     width: 48px;
     margin: 2px;    
     padding: 2px;
-    border-radius: 4px; 
-    
+    border-radius: 4px;
+
     cursor: pointer;
+
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
 }
 
-.logout {
-    background: var(--accentColor);
-    content: url("../img/logout.svg");
+.btn_icon {
+    background: var(--accentColor);    
     box-shadow: 1px  0 3px var(--primaryTextColor), 
             -1px 0  var(--primaryColorLight),
             0 1px 3px var(--primaryTextColor),
-            0 -1px var(--primaryColorLight);
+            0 -1px var(--primaryColorLight); 
 }
 
-.logout:active,
-.logout:hover {
+.btn_icon:active,
+.btn_icon:hover {
     background: var(--accentColorLight);
 }
 
 .upload {
     content: url('../img/upload.svg');
+}
+
+.download {
+    content: url('../img/download.svg');
+}
+
+.logout {
+    content: url("../img/logout.svg");
+}
+
+.delete {
+    content: url('../img/delete.svg');
 }
 
 .folder {
@@ -48,14 +65,23 @@
 .file {
     content: url('../img/file.svg');
 }
-/*
+
+.folder_up {
+    content: url('../img/folderUp.svg');
+}
+
+.new_folder {
+    content: url('../img/newFolder.svg');
+}
+/*----------------------------------
     ESTILOS
-*/
+----------------------------------*/
 * {
     padding: 0;
     margin: 0;
     box-sizing: border-box;
     font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+    font-size: 1rem;
 }
 
 .error {
@@ -64,7 +90,6 @@
 }
 
 body {
-    /*background: var(--dividerColor);*/
     min-width: 250px;
     max-width: 1920px;
     margin: auto;
@@ -80,7 +105,11 @@ header {
     text-align: center;
 }
 
-#user_files {
+h1 {
+    font-size: 2rem;
+}
+
+#folder {
     width: 80%;
     margin: 1rem auto;
 
@@ -88,38 +117,42 @@ header {
     background: var(--primaryColorText);
     box-shadow: 1px 1px 5px var(--primaryTextColor);
     text-align: center;
-}
 
-#user_files table {
     border-collapse: collapse;
-    width: 100%;    
+     
 }
 
-#user_files table tr {
-    border: 1px solid var(--secondaryTextColor);
+#folder tr {    
+    border: 1px solid var(--secondaryTextColor);   
+    vertical-align: middle; 
+    text-align: left;     
 }
 
-#user_files table tr:nth-child(even){
-    background: var(--dividerColor);
+#folder tr:hover {
+    background: var(--primaryColorLight);    
 }
 
-#user_files table td {
-    
+#folder td {
+    border-bottom: 1px solid var(--primaryTextColor);     
+    padding: 1rem 3rem;
+    word-break: break-all;       
 }
-#user_files table th {
-    height: 3rem;
+
+#folder td .icon {
+    vertical-align: middle;
+}
+
+
+#folder th {
+    padding-left: 3rem;
+    height: 3rem;   
     background: var(--darkPrimaryColor);
     color: var(--primaryColorText);
 }
 
-header select {
-    background: var(--primaryColor);
-}
-
-header select option:hover {
-    background: red;
-}
-
+/*-------------------------------------
+    FORMULARIO
+---------------------------------------*/
 form {
     width: 40%;
     margin: 10vh auto 1em auto;
@@ -209,9 +242,17 @@ form button:active {
     background: var(--accentColorLight);
 }
 
+/*------------------------------------------
+    RESPONSIVE
+------------------------------------------*/
 @media only screen and (max-width: 960px) {
     form {
         width: 60%;
+    }
+
+    #folder {
+        width: 99%;
+        margin: auto;
     }
 }
 
@@ -219,6 +260,14 @@ form button:active {
     form {
         width: 99%;
         margin: auto;
+    }
+
+    #folder td .icon {
+        display: block;
+    }
+
+    #folder td {
+        text-align: left;
     }
 
     form div {

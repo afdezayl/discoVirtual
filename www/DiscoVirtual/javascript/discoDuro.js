@@ -11,10 +11,31 @@ function start() {
 
     const btnMkdir = document.getElementById('mkdir');
     btnMkdir.addEventListener('click', mkdir);
+
+    const btnfolderUp = document.getElementById('folder_up');
+    btnfolderUp.addEventListener('click', folderUp);
 }
 
-function getFolderFiles() {
-    const folder = this.id || null;
+//En un set no se pueden añadir elementos repetidos
+const path = new Set();
+
+function folderUp() {
+    if (path.size > 1) {
+        path.delete(getCurrentFolder());
+    }
+
+    getFolderFiles(getCurrentFolder());
+}
+
+function getCurrentFolder() {
+    const lastIndex = path.size - 1;
+    const array = Array.from(path);
+
+    return array[lastIndex];
+}
+
+function getFolderFiles(parentID) {
+    const folder = this.id || parentID || null;
 
     const url = "./php/listUserFiles.php";
 
@@ -34,17 +55,14 @@ function getFolderFiles() {
 }
 
 function printFiles(response) {
-    console.table(response);
     const fileUserList = document.getElementById("user_files");
 
-    let txt = `<table data-parent="${response.parentID}">
-                <tr>
-                    <th>Tipo</th>
-                    <th>Nombre</th>
-                    <th>Opciones</th>
-                </tr>`;
+    //Ruta seguida
+    path.add(response.parentID);
 
-    for (file of response.files) {
+    let txt = "";
+
+    for (const file of response.files) {
         if (file.tipoFichero === "D") {
             txt += printFolder(file);
         } else {
@@ -52,51 +70,55 @@ function printFiles(response) {
         }
     }
 
-    txt += "</table>";
-
     fileUserList.innerHTML = "";
     fileUserList.insertAdjacentHTML("beforeend", txt);
 
     //Añadir eventos
-    for (file of response.files) {
+    for (const file of response.files) {
         const element = document.getElementById(file.id);
         if (file.tipoFichero === "D") {
-            element.addEventListener('dblclick', getFolderFiles);
+            element.addEventListener('click', getFolderFiles);
         } else {
-            element.addEventListener('dblclick', () => console.log("file"));
+            element.addEventListener('click', () => console.log("file"));
         }
     }
 }
 
 function printFolder(file) {
-    return `<tr>
-            <td><i id="${file.id}" class="icon folder"></i><td>
-            <td>${file.nombre}</td>
-            <td>Ir al directorio</td>
+    return `
+        <tr id="${file.id}">
+            <td><i class="icon folder"></i> ${file.nombre}</td>
+            <td><i class="icon delete" data-remove="${file.id}"></i></td>
         </tr>`;
 }
 
 function printFile(file) {
-    return `<tr>
-            <td><i id="${file.id}" class="icon file"></i><td>
-            <td>${file.nombre}</td>
-            <td>Descargar, Borrar</td>
+    return `
+        <tr>
+            <td>
+                <i id="${file.id}" class="icon file"></i> ${file.nombre}
+            </td>
+            <td>
+                <i class="icon download" data-download="${file.id}"></i>
+                <i class="icon delete" data-remove="${file.id}"></i>
+            </td>
         </tr>`;
 }
 
 function mkdir() {
     //Id de la carpeta padre
-    const parentID = document.querySelector("table[data-parent]").attributes['data-parent'].value;
-    
+    const parentID = getCurrentFolder();
+
     let newFolder;
     const regex = /\w{1,255}/;
 
     do {
         newFolder = prompt("Introduce el nombre de la nueva carpeta: ");
-    } while (!newFolder.test(regex));
-    
+    } while (!regex.test(newFolder));
+
     const data = new FormData();
     data.append('newFolder', newFolder);
+    data.append('parentID', parentID);
 
     const init = {
         method: 'POST',
@@ -106,15 +128,22 @@ function mkdir() {
 
     const url = "./php/mkdir.php";
 
-    fetch(url, init)
-        .then(data => data.json())
-        .then(json => console.log(json));
+    if (newFolder) {
+        fetch(url, init)
+            .then(data => data.json())
+            .then(json => console.log(json))
+            .then(() => getFolderFiles(parentID))
+            .catch(err => alert("Error al crear la carpeta"));
+    }
 }
 
 function sendFiles(ev) {
     ev.preventDefault();
 
+    console.log("folder:"+getCurrentFolder());
+
     const data = new FormData(this);
+    data.append("idDepende", getCurrentFolder());
 
     const init = {
         method: 'POST',
@@ -125,34 +154,17 @@ function sendFiles(ev) {
     const url = "./php/uploadFile.php";
 
     fetch(url, init)
-        .then(data => data.json())
-        .then(json => console.log(json))
-        .catch(() => console.log("ERROR"));
+        .then(data => data.text())
+        .then(txt => console.log(txt));
+    // .then(data => data.json())
+    // .then(json => console.table(json))
+    // .catch(() => console.log("ERROR"));
     //console.log(this.elements);
 }
 
-/*function sendFile(ev) {
-    ev.preventDefault();
-
-    const data = new FormData(this);
-
-    const init = {
-        method : 'POST',
-        credentials : 'same-origin',
-        body : data
-    };
-
-    const url = "./php/upload.php";
-
-    fetch(url, init)
-        .then(data => data.text())
-        .then(txt => console.log(txt))
-        .catch(() => console.log("Error al conectar con el servidor"));
-}*/
-
 function manageFile(ev) {
     const files = Array.from(ev.target.files);
-    console.log(files);
+    //console.log(files);
     const uploadFiles = document.getElementById("upload_files");
 
     uploadFiles.innerHTML = files.reduce((txt, file) => txt + `<p>${file.name}</p>`, "");

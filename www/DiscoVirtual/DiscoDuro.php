@@ -28,7 +28,7 @@
     <header>
         <h1>Disco Duro Virtual</h1>
         <a href="./cerrarSesion.php" aria-label="logout">
-            <i class="icon logout" alt="logout"></i>
+            <i class="icon logout btn_icon" alt="logout"></i>
         </a>
     </header>
 
@@ -36,10 +36,30 @@
         <h2>Tus archivos</h2>
         <div>
             <span>/</span>
-            <button id="mkdir">Crear carpeta</button>            
+                    
         </div>
 
-        <section id="user_files"></section>             
+        <table id="folder">
+                <thead>
+                    <tr>                    
+                        <th>Nombre</th>
+                        <th>
+                            <i id="mkdir" class="icon new_folder">Crear carpeta</i>   
+                            <i id="folder_up" class="icon folder_up">Subir carpeta</i>
+                        </th>
+                    </tr>
+                </thead>
+                
+                <tbody id="user_files">
+                </tbody>
+                <tr>
+                    <td><i id="aaaa" class="icon file"></i> Prueba</td>
+                    <td>
+                        <i class="icon download"></i>
+                        <i class="icon delete"></i>
+                    </td>
+                </tr>
+        </table>             
        
         <form action="" method="post" enctype="multipart/form-data" id="form">            
             <div id="upload_files"></div>
@@ -50,7 +70,7 @@
                         <i class="icon upload"></i>Subir archivos
                     </span>                        
                 </label>
-                <input type="file" name="files[]" id="input_file" multiple="multiple" />
+                <input type="file" name="files[]" id="input_file" multiple="multiple" required="required" />
             </div>
             <button type="submit">Enviar</button>
         </form>

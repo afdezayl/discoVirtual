@@ -19,9 +19,4 @@ class Session
             $_SESSION[$key]=$valor;
         }
     }
-
-    /*public static function isAuthorized($pagina)
-    {
-        return in_array($pagina, $_SESSION['paginas']);
-    }*/
 }
