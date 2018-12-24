@@ -7,7 +7,7 @@ class DiscoDuroDB
     private $BBDD = "discoduro2";    
     private $CONEXION;
 
-    private $ALMACEN = "./../../../ficheros/";
+    private $ALMACEN = "./../../../seguridad/ficheros/";
 
     public function __construct()
     {
@@ -23,7 +23,7 @@ class DiscoDuroDB
             exit;
         }
         if (!$conexion->set_charset("utf8")) {
-            echo "Error con utf-8";
+            echo json_encode(["ERROR"=>"Fallo al establecer utf8"]);
             exit;
         }
 
@@ -71,6 +71,25 @@ class DiscoDuroDB
 
     public function getRootFolder($user) {
         return $this->ALMACEN;
+    }
+
+    public function getFile($id, $user) {
+        $conexion = $this->CONEXION;
+
+        $consultaSql = "SELECT nombre, tipoMime, tamanyo
+                    FROM DISCO
+                    WHERE usuario=?
+                        and id=?";
+
+        $consultaPreparada = $conexion->prepare($consultaSql);
+        $consultaPreparada->bind_param('ss', $user, $id);
+
+        $consultaPreparada->execute();
+        $resultado = $consultaPreparada->get_result();
+
+        $file = $resultado->fetch_assoc();
+
+        return $file;
     }
 
     public function getCuota($user) {
@@ -154,14 +173,12 @@ class DiscoDuroDB
 
         $consultaSql = "INSERT INTO DISCO
                     (id, nombre, tamanyo, tipoMime, tipoFichero, usuario, id_depende)
-                    VALUES(?, ?, ?, ?, 'F', ?, ?)";
+                    VALUES(?, ?, ?, ?, 'A', ?, ?)";
         
         $consultaPreparada = $conexion->prepare($consultaSql);
         $consultaPreparada->bind_param('ssssss', $id, $nombre, $tamanyo, $tipoMime, $user, $id_depende);
 
-        $insertado = $consultaPreparada->execute();
-
-        return $insertado;
+        return $consultaPreparada->execute();
     }
 
     public function isUserDir($user, $id)
@@ -182,5 +199,39 @@ class DiscoDuroDB
         $consultaPreparada->fetch();
 
         return $count == 1;
+    }
+
+    function deleteFile($id, $user) {
+        $conexion = $this->CONEXION;
+
+        $consultaSql = "DELETE
+                    FROM DISCO
+                    WHERE usuario=?
+                        and id=?
+                        and id_depende is not null";
+
+        $consultaPreparada = $conexion->prepare($consultaSql);
+        $consultaPreparada->bind_param('ss', $user, $id);
+
+        return $consultaPreparada->execute();
+    }
+
+    function isFile($user, $id) {
+        $conexion = $this->CONEXION;
+
+        $consultaSql = "SELECT tipoFichero
+                    FROM DISCO
+                    WHERE usuario=?
+                        and id=?";
+
+        $consultaPreparada = $conexion->prepare($consultaSql);
+        $consultaPreparada->bind_param('ss', $user, $id);
+
+        $consultaPreparada->execute();
+
+        $consultaPreparada->bind_result($type);
+        $consultaPreparada->fetch();
+
+        return $type == "A";
     }
 }

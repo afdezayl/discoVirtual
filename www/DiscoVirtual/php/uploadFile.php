@@ -2,35 +2,36 @@
     require "./../../../seguridad/disco/Session.php";
     require "./../../../seguridad/disco/DiscoDuroDB.php";
 
-    echo "post-max-size: ".ini_get('post_max_size')."\n";
-    echo "upload-max-filesize: ".ini_get('upload_max_filesize')."\n";
-
     Session::start();
     if (!Session::isValidSession()) {
         echo json_encode(["Error" => "Usuario no autorizado"]);
         exit;
     }
 
-    $DB = new DiscoDuroDB();
-
     if (!isset($_FILES['files'])) {
         echo json_encode(["Error" => "No se han enviado archivos"]);
         exit;
     }
-    //--------------------
-    //TODO Falta id_depende
-    //-------------------------
-    $id_depende = $_POST['idDepende'];
-    echo "Carpeta destino: $id_depende \n";
+    
+    $id_depende = isset($_POST['idDepende']) && strlen($_POST['idDepende']) == 23
+        ? strip_tags(trim($_POST['idDepende']))
+        : null;
+
+    if (is_null($id_depende)) {
+        echo json_encode(["Error" => "Directorio no válido"]);
+        exit;
+    }
 
     //Transponer la matriz $_FILES['files'] para conseguir un array
-    //que cada fila sea un archivo con sus propiedades, y no un conjunto
-    //de 5 arrays de propiedades
+    //que cada fila sea un archivo con sus propiedades, y no un array
+    //compuesto por 5 arrays de propiedades
     $files = transpose($_FILES['files']);
     
     $uploadedFiles = 0;
     $message = [];
     $user = $_SESSION['user'];
+
+    $DB = new DiscoDuroDB();
 
     foreach ($files as $file) {
         $id = uniqid('', true);
@@ -48,21 +49,17 @@
             $finalPath = $DB->getRootFolder($user).$id;
             $cuota = $DB->getCuota($user);
             $usedSpace = $DB->getUsedSpace($user);
-
-            echo "Ruta: $finalPath\n";
-            echo "Cuota: $cuota\n";
-            echo "Used space: $usedSpace\n";
-
-            //TODO: Comprobar cuota
-
-            /*if (move_uploaded_file($tmp_name, $finalPath)) {
+            
+            if ($cuota < $usedSpace + $tamanyo) {
+                $message[] = "$nombre supera la cuota máxima";
+            } elseif (move_uploaded_file($tmp_name, $finalPath)) {
                 $DB->insertFile($id, $nombre, $tamanyo, $tipoMime, $user, $id_depende);
 
                 $message[] = "$nombre subido correctamente";
                 $uploadedFiles++;
             } else {
                 $message[] = "Error al mover el archivo";
-            }*/
+            }
         }
     }
 
@@ -84,7 +81,7 @@
         return $result;
     }
 
-    function getErrorMessage($error)
+    function getErrorMessage($nombre, $error)
     {
         switch ($error) {
             case UPLOAD_ERR_INI_SIZE:

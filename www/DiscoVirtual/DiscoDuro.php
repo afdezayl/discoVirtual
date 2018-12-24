@@ -6,6 +6,32 @@
         header("Location: login.php");
         exit;
     }
+
+    $nFiles = ini_get('max_file_uploads');
+
+    $strFilesize = ini_get('upload_max_filesize');
+    $maxFilesize = getBytes($strFilesize);
+    
+    $strTotalSize = ini_get('post_max_size');
+    $totalSize = getBytes($strTotalSize);
+
+    function getBytes($str) {
+        $unit = substr($str,-1);
+        $size = substr($str, 0, -1);
+
+        switch ($unit) {
+            case 'G':
+                $size *= 1024;
+            case 'M':
+                $size *= 1024;
+            case 'K':
+                $size *= 1024;
+                break;
+        }
+
+        return $size;
+    }
+    
 ?>
 
 <!DOCTYPE html>
@@ -28,7 +54,7 @@
     <header>
         <h1>Disco Duro Virtual</h1>
         <a href="./cerrarSesion.php" aria-label="logout">
-            <i class="icon logout btn_icon" alt="logout"></i>
+            <i class="icon logout btn_icon" alt="logout">Logout</i>
         </a>
     </header>
 
@@ -43,7 +69,8 @@
                 <thead>
                     <tr>                    
                         <th>Nombre</th>
-                        <th>
+                        <th class="size">Tamaño</th>
+                        <th class="options">
                             <i id="mkdir" class="icon new_folder">Crear carpeta</i>   
                             <i id="folder_up" class="icon folder_up">Subir carpeta</i>
                         </th>
@@ -52,24 +79,19 @@
                 
                 <tbody id="user_files">
                 </tbody>
-                <tr>
-                    <td><i id="aaaa" class="icon file"></i> Prueba</td>
-                    <td>
-                        <i class="icon download"></i>
-                        <i class="icon delete"></i>
-                    </td>
-                </tr>
         </table>             
        
-        <form action="" method="post" enctype="multipart/form-data" id="form">            
-            <div id="upload_files"></div>
-
-            <div>
+        <form action="#" method="post" enctype="multipart/form-data" id="form">           
+            <div>                
                 <label for="input_file">
                     <span class="btn_upload">
-                        <i class="icon upload"></i>Subir archivos
+                        <i class="icon upload"></i>Seleccionar archivos
                     </span>                        
                 </label>
+
+                <div id="files_log"></div>
+                
+                <input type="hidden" name="MAX_FILE_SIZE" value="<?php echo $maxFilesize; ?>" data-totalSize="<?php echo $totalSize ?>" data-totalFiles="<?php echo $nFiles ?>" />
                 <input type="file" name="files[]" id="input_file" multiple="multiple" required="required" />
             </div>
             <button type="submit">Enviar</button>

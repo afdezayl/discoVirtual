@@ -27,3 +27,5 @@
         "parentID"=>$folder,
         "files"=>$files
         ]);
+    
+    exit;

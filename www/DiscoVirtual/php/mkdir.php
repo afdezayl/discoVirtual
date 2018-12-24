@@ -21,7 +21,7 @@
     $DB = new DiscoDuroDB();
     $isUserDir = $DB->isUserDir($user, $id_depende);
 
-    //echo "$newFolder, $id_depende";
+    
     if (is_null($newFolder) || (!$isUserDir)) {
         echo "Nombre o id directorio padre no válido";
         exit;

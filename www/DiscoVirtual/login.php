@@ -15,17 +15,17 @@
         ? strip_tags(trim($_POST['pass']))
         : "";
 
-    $txt="";    
+    $txt="";
 
     $DB = new DiscoDuroDB();
     $passDB = $DB->getPassword($user);
 
-    if ($user && $pass && password_verify($pass, $passDB)) {        
+    if ($user && $pass && password_verify($pass, $passDB)) {
         Session::setValues(["user"=>$user]);
                 
         header("Location: DiscoDuro.php");
         exit;
-    } else if ($user || $pass) {
+    } elseif ($user || $pass) {
         $txt="Combinación de usuario y contraseña incorrecta";
     }
 ?>
