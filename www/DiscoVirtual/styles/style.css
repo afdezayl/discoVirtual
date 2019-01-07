@@ -98,6 +98,7 @@ body {
 header {
     display: flex;
     justify-content: space-evenly;
+    align-items: center;
     padding: 1.5rem;
     background: var(--primaryColor);
     border-top: 1rem solid var(--darkPrimaryColor);
@@ -109,23 +110,30 @@ h1 {
     font-size: 2rem;
 }
 
+#path {
+    padding: 1rem;
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: var(--primaryTextColor);
+}
+
 #folder {
     width: 80%;
     margin: 1rem auto;
+    table-layout: fixed;
 
     border-radius: 5px;
     background: var(--primaryColorText);
     box-shadow: 1px 1px 5px var(--primaryTextColor);
     text-align: center;
 
-    border-collapse: collapse;
-     
+    border-collapse: collapse;     
 }
 
 #folder tr {    
     border: 1px solid var(--secondaryTextColor);   
     vertical-align: middle; 
-    text-align: left;     
+    text-align: left;    
 }
 
 #folder tr:hover {
@@ -134,7 +142,7 @@ h1 {
 
 #folder td {
     border-bottom: 1px solid var(--primaryTextColor);     
-    padding: 1rem 3rem;
+    padding: 1rem;
     word-break: break-all;
     cursor: pointer;       
 }
@@ -145,7 +153,7 @@ h1 {
 
 
 #folder th {
-    padding-left: 3rem;
+    padding: 1rem;
     height: 3rem;   
     background: var(--darkPrimaryColor);
     color: var(--primaryColorText);
@@ -155,8 +163,8 @@ h1 {
     word-break: normal;
 }
 
-.options {
-    width: 10rem;
+.options {   
+    width: 10rem;    
 }
 /*-------------------------------------
     FORMULARIO
@@ -180,7 +188,7 @@ form div {
     font-weight: bold;
 }
 
-form div label {
+div label {
     display: block;    
     width: 100%;
     text-align: left;
@@ -208,7 +216,7 @@ form div label {
     background: var(--primaryColor);
 }
 
-form div input {
+div input {
     display: block;
     width: 100%;
     margin: 10px auto;
@@ -222,7 +230,7 @@ form div input {
     cursor: pointer;
 }
 
-form div input:focus {
+div input:focus {
     color: var(--primaryTextColor);
     border-bottom: 2px solid var(--accentColor);
     margin: 10px auto;
@@ -250,12 +258,92 @@ form button:active {
     background: var(--accentColorLight);
 }
 
+/*-----------------------------------------
+    MODAL
+------------------------------------------*/
+.modal {
+    position: fixed;
+    z-index: 1;
+    left: 0;
+    top:0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0,0,0,0.5);
+}
+
+.modal-content {    
+    background: var(--primaryColorText);    
+    margin: 25vh auto;    
+    width: 40%;
+    box-shadow: 0 5px 8px 0 rgba(0,0,0,0.2),
+                0 7px 20px 0 rgba(0,0,0,0.17);
+    animation-name: modal_open;
+    animation-duration: 1s;
+}
+
+.modal-header {
+    padding: 1rem 1rem;
+    color: var(--primaryTextColor);    
+    display: flex;
+    justify-content: space-between;
+    align-items: center;    
+}
+
+.modal-header h2 {
+    font-size: 1.2rem;
+}
+
+.modal-body {
+    padding: 0.5rem 1.5rem;
+    min-height: 4rem;
+    color: var(--primaryTextColor);
+}
+
+.modal-footer {    
+    display: flex;
+    justify-content: flex-end;
+    vertical-align: center;
+    padding: 1rem 1rem;
+}
+
+.close-btn {
+    color: #212121;    
+    font-size: 2rem;    
+}
+
+.close-btn:hover,
+.close-btn:active {
+    color: #000;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.modal button {
+    border: none;
+    background: none;
+    padding: 0.2rem 1rem;
+    color: var(--darkPrimaryColor);
+    font-weight: bold;
+    font-size: 1.2rem;
+}
+
+.modal button:hover,
+.modal button:active {
+    color: var(--accentColor);
+}
+
+@keyframes modal_open {
+    from{opacity: 0}
+    to{opacity: 1}
+}
+
 /*------------------------------------------
     RESPONSIVE
 ------------------------------------------*/
 @media only screen and (max-width: 960px) {
     form {
-        width: 60%;
+        width: 80%;
     }
 
     #folder {
@@ -267,17 +355,17 @@ form button:active {
 @media only screen and (max-width: 600px) {
     form {
         width: 99%;
-        margin: auto;
+        margin: 1rem auto;
     }
 
-    #folder td .icon {
+    .folder,
+    .file {
         display: block;
     }
 
-    #folder td {
-        text-align: left;
+    .modal-content {
+        width: 80%;
     }
-
 
     .size {
         display: none;

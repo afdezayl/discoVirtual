@@ -47,7 +47,8 @@
     <link rel="icon" href="./img/database.svg" sizes="any" type="image/svg+xml" />
     <link rel="stylesheet" href="./styles/style.css" />
 
-    <script src="./javascript/discoDuro.js"></script>
+    <script src="./javascript/customModals.js" defer></script>
+    <script src="./javascript/discoDuro.js" defer></script>
 </head>
 
 <body>
@@ -58,12 +59,8 @@
         </a>
     </header>
 
-    <main>
-        <h2>Tus archivos</h2>
-        <div>
-            <span>/</span>
-                    
-        </div>
+    <main>        
+        <div id="path"></div>
 
         <table id="folder">
                 <thead>

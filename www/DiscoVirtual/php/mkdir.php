@@ -22,10 +22,10 @@
     $isUserDir = $DB->isUserDir($user, $id_depende);
 
     
-    if (is_null($newFolder) || (!$isUserDir)) {
+    if (is_null($newFolder) || (!$isUserDir) || empty($newFolder)) {
         echo "Nombre o id directorio padre no válido";
         exit;
-    }    
+    }
 
     $id = uniqid('', true);
     

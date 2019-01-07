@@ -18,12 +18,14 @@ function start() {
 
 //En un set no se pueden añadir elementos repetidos
 const path = new Set();
+let pathNames = ['Principal'];
 
 function folderUp() {
     if (path.size > 1) {
         path.delete(getCurrentFolder());
-    }
-
+        pathNames = pathNames.slice(0, path.size);
+    }    
+    
     getFolderFiles(getCurrentFolder());
 }
 
@@ -34,10 +36,20 @@ function getCurrentFolder() {
     return array[lastIndex];
 }
 
+function updatePath() {
+    const pathOutput = document.getElementById('path');
+    pathOutput.innerText = pathNames.reduce((pre,folder) => pre + folder + "/", "");
+}
+
 //Mostrar carpetas y archivos
 function getFolderFiles(parentID) {
     const folder = this.id || parentID || null;
 
+    if(this.id) {
+        pathNames.push(this.childNodes[1].innerText.trim());
+    }
+    updatePath();
+    
     const url = "./php/listUserFiles.php";
 
     const data = new FormData();
@@ -52,18 +64,26 @@ function getFolderFiles(parentID) {
     fetch(url, init)
         .then(data => data.json())
         .then(json => printFiles(json))
-        .catch(err => console.log("Error al conectar con la base de datos"));
+        .catch(err => new CustomAlert("Error", "Lo sentimos, no ha sido posible conectar con la base de datos"));
 }
 
 function printFiles(response) {
     const fileUserList = document.getElementById("user_files");
 
     //Ruta seguida
-    path.add(response.parentID);
+    path.add(response.parentID);   
 
+    const files = response.files;
     let txt = "";
 
-    for (const file of response.files) {
+    if (files.length === 0) {
+        txt += `<tr>
+                    <td colspan="2" style="text-align: center">Este directorio está vacío</td>
+                    <td class="size"></td>                    
+                </tr>`;
+    }
+
+    for (const file of files) {
         if (file.tipoFichero === "D") {
             txt += printFolder(file);
         } else {
@@ -74,7 +94,7 @@ function printFiles(response) {
     fileUserList.innerHTML = "";
     fileUserList.insertAdjacentHTML("beforeend", txt);
 
-    response.files
+    files
         .filter(file => file.tipoFichero === "D")
         .forEach(file => document.getElementById(file.id).addEventListener('click', getFolderFiles));
 
@@ -120,29 +140,34 @@ function printFile(file) {
 function deleteFile(ev) {
     ev.stopPropagation();
 
-    const confirmation = confirm("¿Seguro que desea borrar el contenido?");
-    if(confirmation === false) {
-        return;
-    }
+    new CustomConfirm(
+        'Borrar elemento',
+        '¿Estás seguro de borrar el elemento seleccionado?',
+        (confirmation) => {
+            if (confirmation === false) {
+                return;
+            }
 
-    const folder = this.getAttribute('data-remove');
+            const folder = this.getAttribute('data-remove');
 
-    const data = new FormData();
-    data.append('folder', folder);
+            const data = new FormData();
+            data.append('folder', folder);
 
-    const init = {
-        method: 'POST',
-        credentials: 'same-origin',
-        body: data
-    };
+            const init = {
+                method: 'POST',
+                credentials: 'same-origin',
+                body: data
+            };
 
-    const url = "./php/deleteFile.php";
+            const url = "./php/deleteFile.php";
 
-    fetch(url, init)
-        .then(data => data.text())
-        .then(txt => console.log(txt))
-        .then(() => getFolderFiles(getCurrentFolder()))
-        .catch(err => console.log(err));
+            fetch(url, init)
+                .then(data => data.text())
+                .then(txt => console.log(txt))
+                .then(() => getFolderFiles(getCurrentFolder()))
+                .catch(err => new CustomAlert("Error", "Lo sentimos, no ha sido posible conectar con la base de datos"));
+        }
+    );
 }
 
 //Descargar y guardar archivos
@@ -172,13 +197,13 @@ function downloadFile(ev) {
             return blob;
         })
         .then(blob => saveFile(blob, fileName))
-        .catch(err => console.log(err));
+        .catch(err => new CustomAlert("Error", "Lo sentimos, no ha sido posible conectar con la base de datos"));
 }
 
-function saveFile(blob, fileName) {    
+function saveFile(blob, fileName) {
     const url = window.URL.createObjectURL(blob);
 
-    var a = document.createElement("a");
+    const a = document.createElement("a");
     a.href = url;
     a.download = fileName;
     document.body.appendChild(a);
@@ -188,34 +213,41 @@ function saveFile(blob, fileName) {
 
 //Crear carpeta
 function mkdir() {
-    const parentID = getCurrentFolder();
+    const parentID = getCurrentFolder();    
 
-    let newFolder;
-    const regex = /\w{1,255}/;
+    new CustomPrompt(
+        'Crear nueva carpeta',
+        'Nombre:',
+        (newFolder) => {
+            if(newFolder == null) {
+                return;
+            }
 
-    do {
-        newFolder = prompt("Introduce el nombre de la nueva carpeta: ");
-    } while (!regex.test(newFolder));
+            const regex = /^\w{1,255}$/;
+            if(!regex.test(newFolder)) {
+                new CustomAlert('Error', 'Nombre de directorio no válido', mkdir);                
+                return;
+            }
+            
+            const data = new FormData();
+            data.append('newFolder', newFolder);
+            data.append('parentID', parentID);
 
-    const data = new FormData();
-    data.append('newFolder', newFolder);
-    data.append('parentID', parentID);
+            const init = {
+                method: 'POST',
+                credentials: 'same-origin',
+                body: data
+            };
 
-    const init = {
-        method: 'POST',
-        credentials: 'same-origin',
-        body: data
-    };
-
-    const url = "./php/mkdir.php";
-
-    if (newFolder) {
-        fetch(url, init)
-            .then(data => data.json())
-            .then(json => console.log(json))
-            .then(() => getFolderFiles(parentID))
-            .catch(err => alert("Error al crear la carpeta"));
-    }
+            const url = "./php/mkdir.php";
+            
+            fetch(url, init)
+                .then(data => data.json())
+                .then(json => console.log(json))
+                .then(() => getFolderFiles(parentID))
+                .catch(err => new CustomAlert("Error", "No ha sido posible crear la carpeta"));            
+        }
+    );
 }
 
 //Subida de archivos
@@ -238,30 +270,31 @@ function manageFile(ev) {
 
     if (check1 && check2 && check3) {
         const log = document.getElementById('files_log');
-        log.innerHTML = files.reduce((txt, file) => txt + `<p>${file.name}</p>`, "");
+        log.innerHTML = files.reduce((txt, file) => txt + `<p>${file.name}, ${(file.size/1024).toFixed(0)} KB</p>`, "");
     } else {
         const form = document.getElementById('form');
         form.reset();
 
-        let error = "Error, archivos no válidos:\n";
+        let error = "<ul>";
         if (check1 === false)
-            error += `- Algún archivo supera ${maxSize/1024/1024} MB\n`;
+            error += `<li>Algún archivo supera ${maxSize/1024/1024} MB</li>`;
         if (check2 === false)
-            error += `- El conjunto de archivos supera ${maxTotalSize/1024/1024} MB\n`;
+            error += `<li>El conjunto de archivos supera ${maxTotalSize/1024/1024} MB</li>`;
         if (check3 === false)
-            error += `- Máximo de ${maxNumFiles} archivos por subida\n`;
+            error += `<li>Máximo de ${maxNumFiles} archivos por subida</li>`;
 
-        alert(error);
-        ev.target.click();
+        new CustomAlert("Archivos no válidos:", error + "</ul>", () => {
+            ev.target.click();
+        });               
     }
 }
 
 function sendFiles(ev) {
     ev.preventDefault();
 
-    const data = new FormData(this);    
+    const data = new FormData(this);
     data.append("idDepende", getCurrentFolder());
-        
+
     const init = {
         method: 'POST',
         credentials: 'same-origin',
@@ -277,6 +310,5 @@ function sendFiles(ev) {
             const log = document.getElementById('files_log');
             log.innerHTML = "";
         })
-        .catch(err => console.log(err));    
+        .catch(err => new CustomAlert("Error", "Lo sentimos, no ha sido posible conectar con la base de datos"));
 }
-
